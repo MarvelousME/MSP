@@ -6,8 +6,6 @@ export async function GET(request: NextRequest) {
     const userId = request.headers.get('x-user-id')!;
 
     // Get user from database to ensure they still exist and get latest data
-
-    // Get user from database to ensure they still exist and get latest data
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
