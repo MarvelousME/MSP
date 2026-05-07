@@ -1,0 +1,27 @@
+{
+  "Common": {
+    "title": "My Stable Prime",
+    "dashboard": "Panel de Control",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "settings": "Ajustes"
+  },
+  "Admin": {
+    "welcome": "Bienvenido, Administrador",
+    "totalRevenue": "Ingresos Totales",
+    "activeAffiliates": "Afiliados Activos",
+    "pendingApprovals": "Aprobaciones Pendientes"
+  },
+  "Affiliate": {
+    "welcome": "Bienvenido de nuevo",
+    "myEarnings": "Mis Ganancias",
+    "referralLink": "Tu Enlace de Referido",
+    "submitLead": "Enviar Nuevo Prospecto"
+  },
+  "Errors": {
+    "unauthorized": "No tienes autorización para ver esta página.",
+    "notFound": "Página no encontrada.",
+    "serverError": "Algo salió mal por nuestra parte."
+  }
+}

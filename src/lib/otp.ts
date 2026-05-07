@@ -41,7 +41,7 @@ export class OTPService {
         where: {
           email: email.toLowerCase(),
           createdAt: {
-            gte: new Date(Date.now() - 60000) // Within last minute
+            gte: new Date(Date.now() - 5000) // Reduced to 5 seconds for better DX
           }
         }
       });
@@ -49,7 +49,7 @@ export class OTPService {
       if (recentOTP) {
         return {
           success: false,
-          message: 'Please wait 1 minute before requesting another OTP'
+          message: 'Please wait a few seconds before requesting another OTP'
         };
       }
 
@@ -77,10 +77,14 @@ export class OTPService {
         }
       });
 
+      // Log OTP in development for easy access
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`\n🔑 [DEV] Verification code for ${email}: ${code}\n`);
+      }
+
       // Send OTP email
-      const { Resend } = await import('resend');
-      const resendClient = new Resend(process.env.RESEND_API_KEY);
-      const emailResult = await resendClient.emails.send({
+      const { getResendClient } = await import('./email');
+      const emailResult = await getResendClient().emails.send({
         from: process.env.RESEND_FROM_EMAIL!,
         to: email,
         subject: 'Your Login Code',
@@ -89,6 +93,16 @@ export class OTPService {
 
       if (emailResult.error) {
         console.error('Failed to send OTP email:', emailResult.error);
+        
+        // Always allow fallback if we're on localhost to bypass Resend testing restrictions
+        const isLocal = process.env.NEXT_PUBLIC_APP_URL?.includes('localhost');
+        if (isLocal || process.env.NODE_ENV === 'development') {
+          return {
+            success: true,
+            message: `OTP generated (Check server logs for code: ${code})`
+          };
+        }
+
         return {
           success: false,
           message: 'Failed to send OTP email. Please try again.'

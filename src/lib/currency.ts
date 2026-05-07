@@ -8,6 +8,7 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
     'BGN': 'лв.',
     'CAD': 'CA$',
     'AUD': 'A$',
+    'ZAR': 'R',
 };
 
 export async function getCurrencySymbol(): Promise<string> {

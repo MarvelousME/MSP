@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
       programSettings = await prisma.programSettings.create({
         data: {
           programId: `prg_${Date.now()}`,
-          productName: 'BsBot',
-          programName: "BsBot's Affiliate Program",
+          productName: 'My Stable Prime',
+          programName: "My Stable Prime's Affiliate Program",
           websiteUrl: 'https://kyns.com',
           currency: 'INR',
           portalSubdomain: 'bsbot.tolt.io',
@@ -96,8 +96,8 @@ export async function PUT(request: NextRequest) {
       programSettings = await prisma.programSettings.create({
         data: {
           programId: `prg_${Date.now()}`,
-          productName: 'BsBot',
-          programName: "BsBot's Affiliate Program",
+          productName: 'My Stable Prime',
+          programName: "My Stable Prime's Affiliate Program",
           websiteUrl: 'https://kyns.com',
           currency: 'INR',
           portalSubdomain: 'bsbot.tolt.io'

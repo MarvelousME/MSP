@@ -1,0 +1,27 @@
+{
+  "Common": {
+    "title": "My Stable Prime",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "settings": "Settings"
+  },
+  "Admin": {
+    "welcome": "Welcome, Admin",
+    "totalRevenue": "Total Revenue",
+    "activeAffiliates": "Active Affiliates",
+    "pendingApprovals": "Pending Approvals"
+  },
+  "Affiliate": {
+    "welcome": "Welcome back",
+    "myEarnings": "My Earnings",
+    "referralLink": "Your Referral Link",
+    "submitLead": "Submit New Lead"
+  },
+  "Errors": {
+    "unauthorized": "You are not authorized to view this page.",
+    "notFound": "Page not found.",
+    "serverError": "Something went wrong on our end."
+  }
+}

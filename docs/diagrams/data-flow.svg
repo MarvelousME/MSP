@@ -1,0 +1,47 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#ffffff" rx="10" />
+  
+  <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#0f172a">Data Flow: Referral to Commission</text>
+
+  <!-- Data Sources -->
+  <rect x="50" y="100" width="120" height="60" fill="#eff6ff" stroke="#3b82f6" rx="5" />
+  <text x="110" y="135" font-family="Arial" font-size="12" text-anchor="middle" fill="#1e40af">Referral Link Click</text>
+  
+  <rect x="50" y="250" width="120" height="60" fill="#f0fdf4" stroke="#10b981" rx="5" />
+  <text x="110" y="285" font-family="Arial" font-size="12" text-anchor="middle" fill="#065f46">Conversion Event</text>
+
+  <!-- Processing Nodes -->
+  <polygon points="250,130 400,100 400,160" fill="#dbeafe" stroke="#3b82f6" />
+  <text x="325" y="135" font-family="Arial" font-size="10" text-anchor="middle" fill="#1e40af">Click Log</text>
+
+  <rect x="450" y="180" width="180" height="120" fill="#f8fafc" stroke="#475569" stroke-dasharray="5,5" rx="10" />
+  <text x="540" y="210" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e293b">Commission Logic</text>
+  <text x="540" y="235" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">1. Lookup Partner Group</text>
+  <text x="540" y="255" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">2. Apply Rate (%)</text>
+  <text x="540" y="275" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">3. Calculate Fixed Fees</text>
+
+  <!-- Storage -->
+  <path d="M 450 450 Q 450 420 480 420 L 600 420 Q 630 420 630 450 L 630 550 Q 630 580 600 580 L 480 580 Q 450 580 450 550 Z" fill="#f1f5f9" stroke="#0f172a" />
+  <text x="540" y="505" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#0f172a">PostgreSQL</text>
+  <text x="540" y="530" font-family="Arial" font-size="11" text-anchor="middle" fill="#475569">Commissions Table</text>
+
+  <!-- Real-time Updates -->
+  <rect x="250" y="450" width="150" height="80" fill="#fef2f2" stroke="#ef4444" rx="10" />
+  <text x="325" y="485" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle" fill="#991b1b">Real-time Updates</text>
+  <text x="325" y="505" font-family="Arial" font-size="11" text-anchor="middle" fill="#b91c1c">Socket.io Broadcast</text>
+
+  <!-- Connectors -->
+  <path d="M 170 130 L 250 130" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M 170 280 L 450 280" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M 540 300 L 540 420" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M 450 500 L 400 500" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead-red)" />
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+    </marker>
+    <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+    </marker>
+  </defs>
+</svg>

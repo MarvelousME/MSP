@@ -4,49 +4,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    /* Cyber-Fintech Design System Tokens */
+    --cyber-teal: 171 77% 40%;
+    --cyber-orange: 18 100% 50%;
+    --cyber-amber: 38 92% 50%;
+    --cyber-carbon: 222 47% 11%;
+    
+    --background: 222 47% 4%;
+    --foreground: 213 31% 91%;
+    --card: 222 47% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 222 47% 4%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 18 100% 50%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 171 77% 40%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 171 77% 40%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 222 47% 12%;
+    --input: 222 47% 12%;
+    --ring: 18 100% 50%;
     --radius: 0.5rem;
-    --chart-1: 221.2 83.2% 53.3%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 222 47% 3%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 18 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 171 77% 15%;
+    --sidebar-accent-foreground: 171 77% 80%;
+    --sidebar-border: 222 47% 10%;
+    --sidebar-ring: 18 100% 50%;
   }
   .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Ensuring dark mode is default for Cyber-Fintech */
+    --background: 222 47% 4%;
+    --foreground: 213 31% 91%;
+    --primary: 18 100% 50%;
+    --ring: 18 100% 50%;
+    --sidebar-background: 222 47% 3%;
   }
 }
 
@@ -57,6 +56,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
   }
 }
 
@@ -76,7 +76,73 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: hsl(var(--flame-orange) / 0.5);
+}
+
+/* Cyber-Fintech UI Utilities */
+@layer utilities {
+  .cyber-grid {
+    background-image: 
+      linear-gradient(to right, rgba(20, 184, 166, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(20, 184, 166, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .cyber-grid-dots {
+    background-image: radial-gradient(rgba(20, 184, 166, 0.15) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .cyber-scanline {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(20, 184, 166, 0.05) 50%,
+      transparent
+    );
+    background-size: 100% 4px;
+    animation: scanline 8s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  .glass-card {
+    @apply bg-[#020617]/60 backdrop-blur-xl border border-white/5 shadow-2xl rounded-xl transition-all duration-300;
+    box-shadow: 0 0 40px -10px rgba(0, 0, 0, 0.5);
+  }
+
+  .glass-card:hover {
+    @apply border-teal-500/30 bg-[#020617]/80;
+    box-shadow: 0 0 50px -10px rgba(20, 184, 166, 0.1);
+  }
+
+  .cyber-card {
+    @apply relative overflow-hidden bg-[#020617]/80 border border-teal-500/20 rounded-lg;
+    clip-path: polygon(
+      0% 0%, 
+      calc(100% - 15px) 0%, 
+      100% 15px, 
+      100% 100%, 
+      15px 100%, 
+      0% calc(100% - 15px)
+    );
+  }
+
+  .cyber-card::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-teal-500/40 to-transparent;
+  }
+
+  .text-cyber-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-500;
+  }
+
+  .bg-cyber-gradient {
+    @apply bg-gradient-to-br from-teal-600 via-teal-500 to-emerald-600;
+  }
 }
 
 /* Premium UI Utilities */
@@ -86,28 +152,24 @@
   }
   
   .dark .glass {
-    @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-2xl;
+    @apply bg-black/40 backdrop-blur-lg border border-white/5 shadow-2xl;
   }
 
-  .glass-card {
-    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-2xl transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:bg-white/50;
+  .text-flame-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-600 via-red-500 to-yellow-500;
   }
 
-  .dark .glass-card {
-    @apply bg-neutral-900/40 backdrop-blur-xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-2xl transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] hover:bg-neutral-900/60;
+  .bg-flame-gradient {
+    @apply bg-gradient-to-br from-orange-600 via-red-600 to-amber-500;
   }
 
-  .glass-morphism {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+  .animate-flame-pulse {
+    animation: flame-pulse 3s infinite ease-in-out;
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-teal-600;
+  @keyframes flame-pulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); filter: blur(40px); }
+    50% { opacity: 1; transform: scale(1.1); filter: blur(60px); }
   }
 
   .animate-slow-fade {

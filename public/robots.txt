@@ -1,5 +1,5 @@
-# Refferq - Open Source Affiliate Platform
-# https://app.refferq.com/
+# My Stable Prime - Open Source Affiliate Platform
+# https://app.mystableprime.com/
 
 User-agent: *
 Allow: /
@@ -22,7 +22,7 @@ Disallow: /profile/
 Disallow: /settings/
 
 # Sitemap
-Sitemap: https://app.refferq.com/sitemap.xml
+Sitemap: https://app.mystableprime.com/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 5

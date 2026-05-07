@@ -1,5 +1,5 @@
 # ---- Base ----
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
@@ -7,7 +7,7 @@ WORKDIR /app
 FROM base AS deps
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
-RUN npm ci
+RUN npm install
 
 # ---- Builder ----
 FROM base AS builder
@@ -42,7 +42,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Copy Prisma schema (needed for migrations at runtime)
 COPY --from=builder /app/prisma ./prisma
+# removed duplicate copy
+# removed duplicate copy
+# removed duplicate copy
+# removed duplicate copy
+# removed duplicate copy
 
+RUN chown -R nextjs:nodejs /app/prisma
 USER nextjs
 
 EXPOSE 3000

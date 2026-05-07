@@ -8,6 +8,8 @@ datasource db {
 }
 
 model User {
+  ethnicity        Ethnicity?   @map("ethnicity")
+  age              Int?         @map("age")
   id             String       @id @default(cuid())
   email          String       @unique
   name           String
@@ -17,6 +19,8 @@ model User {
   lastLogin      DateTime?    @map("last_login")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
+  gender         Gender?
+  birthDate      DateTime?    @map("birth_date")
   profilePicture String?      @map("profile_picture")
   affiliate      Affiliate?
   auditLogs      AuditLog[]
@@ -26,12 +30,30 @@ model User {
   @@map("users")
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Ethnicity {
+  WHITE
+  BLACK
+  ASIAN
+  HISPANIC
+  INDIAN
+  MIDDLE_EASTERN
+  OTHER
+}
+
 model Affiliate {
   id             String        @id @default(cuid())
   userId         String        @unique @map("user_id")
   referralCode   String        @unique @map("referral_code")
   payoutDetails  Json          @default("{}") @map("payout_details")
   balanceCents   Int           @default(0) @map("balance_cents")
+  points         Int           @default(0)
+  level          Int           @default(1)
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
   partnerGroupId String?       @map("partner_group_id")
@@ -42,6 +64,9 @@ model Affiliate {
   referrals      Referral[]
   transactions   Transaction[]
   payouts        Payout[]
+  badges         AffiliateBadge[]
+  pointLogs      PointLog[]
+  leaderboard    LeaderboardEntry?
 
   @@map("affiliates")
 }
@@ -169,6 +194,16 @@ model AuditLog {
   actor      User     @relation(fields: [actorId], references: [id], onDelete: Cascade)
 
   @@map("audit_logs")
+}
+
+model BlockedIp {
+  id        String   @id @default(cuid())
+  ip        String   @unique
+  reason    String
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("blocked_ips")
 }
 
 model OTP {
@@ -649,6 +684,8 @@ model Program {
   termsUrl          String?  @map("terms_url")
   logoUrl           String?  @map("logo_url")
   brandColor        String   @default("#10b981") @map("brand_color")
+  customDomain      String?  @unique @map("custom_domain")
+  domainVerified    Boolean  @default(false) @map("domain_verified")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
@@ -688,4 +725,55 @@ enum TeamMemberStatus {
   PENDING
   ACTIVE
   DEACTIVATED
+}
+
+// ───────────────────────────────────────────────
+// Gamification Models
+// ───────────────────────────────────────────────
+
+model Badge {
+  id          String           @id @default(cuid())
+  name        String
+  description String
+  icon        String
+  requirement Json             @default("{}")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  affiliates  AffiliateBadge[]
+
+  @@map("badges")
+}
+
+model AffiliateBadge {
+  id          String    @id @default(cuid())
+  affiliateId String    @map("affiliate_id")
+  badgeId     String    @map("badge_id")
+  earnedAt    DateTime  @default(now()) @map("earned_at")
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  badge       Badge     @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([affiliateId, badgeId])
+  @@map("affiliate_badges")
+}
+
+model PointLog {
+  id          String    @id @default(cuid())
+  affiliateId String    @map("affiliate_id")
+  points      Int
+  reason      String
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@map("point_logs")
+}
+
+model LeaderboardEntry {
+  id          String    @id @default(cuid())
+  affiliateId String    @unique @map("affiliate_id")
+  points      Int       @default(0)
+  rank        Int       @default(0)
+  lastUpdated DateTime  @default(now()) @map("last_updated")
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@map("leaderboard")
 }

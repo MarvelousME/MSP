@@ -29,14 +29,18 @@ export async function GET(request: NextRequest) {
             email: true,
             role: true,
             status: true,
-            createdAt: true
+            createdAt: true,
+            gender: true,
+            birthDate: true,
+            ethnicity: true,
+            age: true,
           }
         },
         _count: {
           select: {
             referrals: true
           }
-        }
+        },
       },
       orderBy: {
         createdAt: 'desc'

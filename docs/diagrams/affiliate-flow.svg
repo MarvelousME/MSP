@@ -1,0 +1,71 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#f1f5f9" rx="10" />
+  
+  <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#0f172a">Affiliate Lifecycle Workflow</text>
+
+  <!-- Flow Nodes -->
+  
+  <!-- Step 1 -->
+  <rect x="50" y="80" width="150" height="80" fill="white" stroke="#3b82f6" stroke-width="2" rx="10" />
+  <text x="125" y="115" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e40af">Registration</text>
+  <text x="125" y="135" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">Affiliate Signs Up</text>
+  <circle cx="200" cy="120" r="15" fill="#3b82f6" />
+  <text x="200" y="124" font-family="Arial" font-size="12" text-anchor="middle" fill="white" font-weight="bold">1</text>
+
+  <!-- Arrow 1-2 -->
+  <path d="M 215 120 L 285 120" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+
+  <!-- Step 2 -->
+  <rect x="300" y="80" width="150" height="80" fill="white" stroke="#f59e0b" stroke-width="2" rx="10" />
+  <text x="375" y="115" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#92400e">Verification</text>
+  <text x="375" y="135" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">Admin Review (Pending)</text>
+  <circle cx="450" cy="120" r="15" fill="#f59e0b" />
+  <text x="450" y="124" font-family="Arial" font-size="12" text-anchor="middle" fill="white" font-weight="bold">2</text>
+
+  <!-- Arrow 2-3 -->
+  <path d="M 465 120 L 535 120" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+
+  <!-- Step 3 -->
+  <rect x="550" y="80" width="150" height="80" fill="white" stroke="#10b981" stroke-width="2" rx="10" />
+  <text x="625" y="115" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#065f46">Activation</text>
+  <text x="625" y="135" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">Active & Access Tools</text>
+  <circle cx="700" cy="120" r="15" fill="#10b981" />
+  <text x="700" y="124" font-family="Arial" font-size="12" text-anchor="middle" fill="white" font-weight="bold">3</text>
+
+  <!-- Vertical Arrow 3-4 -->
+  <path d="M 625 160 L 625 220" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+
+  <!-- Step 4 -->
+  <rect x="550" y="230" width="150" height="80" fill="white" stroke="#6366f1" stroke-width="2" rx="10" />
+  <text x="625" y="265" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#3730a3">Marketing</text>
+  <text x="625" y="285" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">Share Referral Links</text>
+  <circle cx="700" cy="270" r="15" fill="#6366f1" />
+  <text x="700" y="274" font-family="Arial" font-size="12" text-anchor="middle" fill="white" font-weight="bold">4</text>
+
+  <!-- Arrow 4-5 -->
+  <path d="M 550 270 L 465 270" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+
+  <!-- Step 5 -->
+  <rect x="300" y="230" width="150" height="80" fill="white" stroke="#ec4899" stroke-width="2" rx="10" />
+  <text x="375" y="265" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#831843">Conversion</text>
+  <text x="375" y="285" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">Leads & Commissions</text>
+  <circle cx="450" cy="270" r="15" fill="#ec4899" />
+  <text x="450" y="274" font-family="Arial" font-size="12" text-anchor="middle" fill="white" font-weight="bold">5</text>
+
+  <!-- Arrow 5-6 -->
+  <path d="M 300 270 L 215 270" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+
+  <!-- Step 6 -->
+  <rect x="50" y="230" width="150" height="80" fill="white" stroke="#06b6d4" stroke-width="2" rx="10" />
+  <text x="125" y="265" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#155e75">Payout</text>
+  <text x="125" y="285" font-family="Arial" font-size="11" text-anchor="middle" fill="#64748b">Earnings Withdrawn</text>
+  <circle cx="200" cy="270" r="15" fill="#06b6d4" />
+  <text x="200" y="274" font-family="Arial" font-size="12" text-anchor="middle" fill="white" font-weight="bold">6</text>
+
+  <!-- Definitions -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+    </marker>
+  </defs>
+</svg>
