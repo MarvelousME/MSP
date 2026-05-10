@@ -42,11 +42,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Copy Prisma schema (needed for migrations at runtime)
 COPY --from=builder /app/prisma ./prisma
-# removed duplicate copy
-# removed duplicate copy
-# removed duplicate copy
-# removed duplicate copy
-# removed duplicate copy
 
 RUN chown -R nextjs:nodejs /app/prisma
 USER nextjs
