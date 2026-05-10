@@ -29,6 +29,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "setup": "npm install && npm run setup:mobile && npm run db:generate",
+    "setup:mobile": "npm install --prefix mobile",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",

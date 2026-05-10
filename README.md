@@ -83,15 +83,14 @@
 git clone https://github.com/yourusername/mystableprime.git
 cd mystableprime
 
-# Install dependencies
-npm install   # or yarn / pnpm
+# Install dependencies (web + mobile + Prisma client)
+npm run setup
 
 # Create .env.local (copy from .env.example)
 cp .env.example .env.local
 # Fill in required values (DATABASE_URL, JWT_SECRET, RESEND_API_KEY, etc.)
 
 # Set up database
-npx prisma generate
 npx prisma db push   # creates schema
 # (optional) seed sample data
 npx prisma db seed
@@ -100,6 +99,12 @@ npx prisma db seed
 npm run dev
 ```
 Open `http://localhost:3000`.
+
+> The Expo / React Native app under `mobile/` is a self-contained npm
+> project with its own `package.json` and `tsconfig.json`. It is excluded
+> from the Next.js build (`tsconfig.json` and `.dockerignore`). Use
+> `npm run setup:mobile` to install its dependencies, and develop it via
+> `cd mobile && npm start` (Expo).
 
 ---
 
