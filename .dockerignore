@@ -28,6 +28,8 @@ Thumbs.db
 docs/
 wiki/
 frontend/
+frontend-old/
+mobile/
 *.md
 !README.md
 LICENSE

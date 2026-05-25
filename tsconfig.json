@@ -39,6 +39,7 @@
     "node_modules",
     "backend/**/*",
     "frontend-old/**/*",
+    "mobile/**/*",
     ".next/dev/types"
   ]
 }

@@ -10,7 +10,7 @@ const JWT_SECRET = new TextEncoder().encode(
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const host = request.headers.get('host') || '';
 
@@ -55,8 +55,11 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(new URL('/login', request.url));
             }
 
-            // Inject headers and proceed to intlMiddleware
-            const response = intlMiddleware(request);
+            // For API routes, skip i18n rewriting (it would 404 the route).
+            // For pages, run the i18n middleware so locale prefix is applied.
+            const response = pathname.startsWith('/api/')
+              ? NextResponse.next()
+              : intlMiddleware(request);
             response.headers.set('x-user-id', payload.userId as string);
             response.headers.set('x-user-role', userRole);
             return response;

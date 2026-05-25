@@ -7,10 +7,12 @@ export async function POST(request: NextRequest) {
       message: 'Logged out successfully'
     });
 
+    const proto = request.headers.get('x-forwarded-proto')
+      || request.nextUrl.protocol.replace(':', '');
     // Clear the auth token cookie
     response.cookies.set('auth-token', '', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: proto === 'https',
       sameSite: 'lax',
       expires: new Date(0) // Expire immediately
     });

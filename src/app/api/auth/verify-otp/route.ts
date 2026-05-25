@@ -66,9 +66,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    const proto = request.headers.get('x-forwarded-proto')
+      || request.nextUrl.protocol.replace(':', '');
     response.cookies.set('auth-token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: proto === 'https',
       sameSite: 'lax',
       maxAge: 86400, // 24 hours
       path: '/'
