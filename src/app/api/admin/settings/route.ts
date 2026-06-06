@@ -108,9 +108,12 @@ export async function PUT(request: NextRequest) {
     // Update program settings — only allow specific fields (prevent mass assignment)
     const allowedFields = [
       'programName', 'productName', 'websiteUrl', 'currency', 'portalSubdomain',
-      'companyName', 'companyLogo', 'primaryColor', 'secondaryColor',
-      'cookieDuration', 'minimumPayout', 'payoutFrequency', 'autoApprove',
-      'commissionType', 'commissionValue', 'brandingEnabled', 'commissionHoldDays'
+      'companyName', 'companyLogo', 'cookieDuration', 'payoutFrequency',
+      'commissionHoldDays', 'minimumPayoutThreshold', 'payoutTerm', 'minPayoutCents',
+      'blockedCountries', 'payoutMethods', 'brandBackgroundColor', 'brandButtonColor',
+      'brandTextColor', 'hideCustomerEmails', 'disablePersonalizedLinks',
+      'allowManualLeadSubmission', 'hidePartnerLinks', 'requireBusinessEmail',
+      'enablePostbacks', 'autoApprovePayouts', 'programWideCouponCode',
     ];
     const sanitizedData: Record<string, any> = {};
     for (const key of allowedFields) {

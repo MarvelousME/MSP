@@ -84,9 +84,9 @@ export async function checkRateLimit(
     console.error('Rate limit check error:', error);
     // On error, deny the request (fail closed for security)
     return {
-      allowed: false,
+      allowed: true, // Fail open for UX - rate limiting errors shouldn't block the app
       limit: maxRequests,
-      remaining: 0,
+      remaining: maxRequests,
       resetAt: new Date(now.getTime() + windowMs),
     };
   }

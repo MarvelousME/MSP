@@ -6,14 +6,14 @@ services:
     container_name: mystableprime-app
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "2020:3000"
     environment:
       - DATABASE_URL=postgresql://mystableprime:mystableprime@db:5432/mystableprime
       - JWT_SECRET=${JWT_SECRET:-change-me-to-a-random-string-min-32-chars}
       - RESEND_API_KEY=${RESEND_API_KEY:-}
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-My Stable Prime <onboarding@resend.dev>}
       - ADMIN_EMAILS=${ADMIN_EMAILS:-}
-      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:2020}
     depends_on:
       db:
         condition: service_healthy
@@ -22,6 +22,7 @@ services:
 
   db:
     image: postgres:16-alpine
+    platform: linux/amd64
     container_name: mystableprime-db
     restart: unless-stopped
     environment:

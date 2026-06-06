@@ -761,7 +761,7 @@ export const SidebarNav = ({
           <span className="flex-1 text-left">{item.label}</span>
           {item.badge && (
             <span className={`
-              px-2 py-0.5 text-[10px] rounded-full font-semibold
+              px-2 py-0.5 text-[13px] rounded-full font-semibold
               ${activeItem === item.id 
                 ? 'bg-white/20 text-white' 
                 : 'bg-indigo-100 text-indigo-600'

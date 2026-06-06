@@ -80,8 +80,8 @@
 
 ### Steps
 ```bash
-git clone https://github.com/yourusername/mystableprime.git
-cd mystableprime
+git clone https://github.com/MarvelousME/MSP.git
+cd MSP
 
 # Install dependencies (web + mobile + Prisma client)
 npm run setup
@@ -136,24 +136,25 @@ See `docs/DEPLOYMENT.md` for full details.
 
 ## 🗂️ Project Structure
 ```
-mystableprime/
+MSP/
 ├─ prisma/               # Prisma schema & migrations
-├─ public/               # Static assets
+├─ public/               # Static assets & brand images
 ├─ src/
-│  ├─ app/               # Next.js App Router (pages, api)
-│  │  ├─ admin/          # Admin UI routes
-│  │  ├─ affiliate/      # Affiliate UI routes
+│  ├─ app/               # Next.js App Router (pages, API)
+│  │  ├─ admin/          # Admin dashboard routes
+│  │  ├─ affiliate/      # Affiliate dashboard routes
 │  │  ├─ api/            # Backend API routes
-│  │  └─ auth/           # Authentication endpoints
-│  ├─ components/        # Reusable React components
+│  │  ├─ login/          # Auth pages
+│  │  └─ register/
+│  ├─ components/        # UI, layout, brand components
 │  ├─ hooks/             # Custom React hooks
-│  ├─ lib/               # Core libraries (services, utils)
-│  └─ middleware.ts     # Global middleware (auth, rls)
-├─ docs/                 # Documentation files
-├─ .env.example          # Example env config
-├─ next.config.js        # Next.js configuration
-├─ tailwind.config.ts    # Tailwind configuration
-└─ README.md             # This file
+│  ├─ lib/               # Services, auth, API client
+│  └─ proxy.ts           # Request proxy (auth, routing)
+├─ mobile/               # Expo app (separate package)
+├─ docs/                 # Technical documentation
+├─ .env.example          # Example environment config
+├─ docker-compose.yml    # Local Docker stack
+└─ README.md
 ```
 
 ---
@@ -191,8 +192,8 @@ Developed by the **My Stable Prime Team**.
 
 ## 📞 Support
 - **Documentation**: `docs/`
-- **Issues**: <https://github.com/yourusername/mystableprime/issues>
-- **Discussions**: <https://github.com/yourusername/mystableprime/discussions>
+- **Issues**: <https://github.com/MarvelousME/MSP/issues>
+- **Discussions**: <https://github.com/MarvelousME/MSP/discussions>
 
 ---
 

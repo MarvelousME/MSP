@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api-client';
 
 interface User {
   id: string;
@@ -32,9 +33,9 @@ export function useAuth() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me', {
+      const response = await apiFetch('/api/auth/me', {
         method: 'GET',
-        credentials: 'include', // Include cookies
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -65,7 +66,7 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', {
+      await apiFetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       });

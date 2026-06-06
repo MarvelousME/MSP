@@ -4,11 +4,11 @@ import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limit: 3 OTP sends per minute per IP
+    // Rate limit: 10 OTP sends per minute per IP (increased from 3 for better UX)
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
       || 'unknown';
-    const rateLimit = await checkRateLimit(ip, 'auth/send-otp', 3, 60 * 1000);
+    const rateLimit = await checkRateLimit(ip, 'auth/send-otp', 10, 60 * 1000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: 'Too many OTP requests. Please try again later.' },

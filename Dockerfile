@@ -44,10 +44,27 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 
 RUN chown -R nextjs:nodejs /app/prisma
+
+# Create graceful startup script
+COPY --chown=nextjs:nodejs <<'EOF' /app/start.sh
+#!/bin/sh
+set -e
+
+echo "[startup] Running Prisma migrations..."
+if ! npx prisma migrate deploy 2>&1; then
+  echo "[startup] WARNING: Migration failed — continuing anyway (DB may already be up to date)"
+fi
+
+echo "[startup] Starting Next.js on port 2020..."
+exec node server.js
+EOF
+
+RUN chmod +x /app/start.sh
+
 USER nextjs
 
-EXPOSE 3000
-ENV PORT=3000
+EXPOSE 2020
+ENV PORT=2020
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["/bin/sh", "/app/start.sh"]

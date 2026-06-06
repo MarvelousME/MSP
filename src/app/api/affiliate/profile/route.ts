@@ -106,7 +106,8 @@ export async function GET(request: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        profilePicture: user.profilePicture,
       },
       affiliate: affiliate,
       stats,
@@ -151,12 +152,15 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, company, email, country, paymentMethod, paymentEmail } = body;
+    const { name, company, email, country, paymentMethod, paymentEmail, profilePicture } = body;
 
     // Update user name and email if provided
-    const userUpdateData: any = {};
+    const userUpdateData: Record<string, unknown> = {};
     if (name && name.trim()) {
       userUpdateData.name = name.trim();
+    }
+    if (profilePicture !== undefined) {
+      userUpdateData.profilePicture = profilePicture || null;
     }
     if (email && email.trim() && email !== user.email) {
       // Check if email is already taken

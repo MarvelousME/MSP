@@ -1,57 +1,144 @@
-# Dependencies
-node_modules
-/.pnp
-.pnp.js
+# =============================================================================
+# My Stable Prime (MSP) — production .gitignore
+# Next.js 16 · TypeScript · Prisma · PostgreSQL · Docker · Expo mobile
+# =============================================================================
 
-# Testing
-/coverage
+# --- Dependencies ---
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+mobile/node_modules/
 
-# Next.js
-/.next/
-/out/
-
-# Production
-/build
-/dist
-
-# Environment Variables
-.env
-.env*.local
-.env.production
-
-# Debug
+# --- Package managers ---
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
 
-# Vercel
+# --- Next.js ---
+.next/
+out/
+build/
+dist/
 .vercel
-
-# TypeScript
-*.tsbuildinfo
+.turbo
 next-env.d.ts
 
-# Prisma
-/generated/prisma
-/prisma/migrations/*.sql
+# --- TypeScript ---
+*.tsbuildinfo
+tsconfig.tsbuildinfo
 
-# IDE
-.vscode/settings.json
-.idea
+# --- Testing & coverage ---
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# --- Environment & secrets (never commit) ---
+.env
+.env.*
+!.env.example
+!.env*.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+service-account*.json
+
+# --- Prisma ---
+# Keep schema + migrations; ignore generated client output only
+/generated/prisma
+
+# --- Logs & runtime ---
+logs/
+*.log
+*.log.*
+pids/
+*.pid
+*.seed
+
+# --- Caches ---
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.swc/
 *.swp
 *.swo
 *~
 
-# OS
+# --- OS ---
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Logs
-logs
-*.log
+# --- IDEs & editors ---
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.sublime-project
+*.sublime-workspace
 
-# Copilot
+# --- Cursor / AI local state ---
+.cursor/
+!.cursor/rules/
+!.cursor/skills/
+.agent/
+.claude/
+
+# --- Docker (local overrides only) ---
+docker-compose.override.yml
+docker-compose.*.local.yml
+
+# --- Expo / React Native (mobile/) ---
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/.metro-health-check*
+*.jks
+*.mobileprovision
+*.orig.*
+*.hprof
+
+# --- Misc build & temp ---
+*.local
+*.bak
+*.backup
+*.old
+*.tmp
+*.temp
+.temp/
+tmp/
+temp/
+
+# --- Local dev scratch (not part of the product) ---
+scratch/
+test-file.js
+
+# --- Optional: local-only GitHub Copilot instructions ---
 .github/copilot-instructions.md
-
-# Scripts
-/scripts/
