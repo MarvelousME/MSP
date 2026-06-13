@@ -1,243 +1,299 @@
 import { prisma } from './prisma';
+import { getResendClient } from './email';
+import { getDatabaseUnavailableMessage } from './prisma-errors';
 import crypto from 'crypto';
 
 export class OTPService {
-  // Generate a cryptographically secure 6-digit OTP
   private generateOTP(): string {
     return crypto.randomInt(100000, 999999).toString();
   }
 
-  // Generate and send OTP via email
-  async sendOTP(email: string): Promise<{ success: boolean; message: string }> {
+  private normalizeEmail(email: string): string {
+    return email.toLowerCase().trim();
+  }
+
+  private isDevDeliveryMode(): boolean {
+    return (
+      process.env.NODE_ENV === 'development' ||
+      process.env.OTP_DEV_FALLBACK === 'true' ||
+      (process.env.NEXT_PUBLIC_APP_URL?.includes('localhost') ?? false)
+    );
+  }
+
+  private logDevCode(email: string, code: string): void {
+    console.log(`\n🔑 [DEV] Verification code for ${email}: ${code}\n`);
+  }
+
+  private async deliverOtpEmail(
+    email: string,
+    code: string,
+    userName: string
+  ): Promise<{ delivered: boolean; devFallback: boolean }> {
+    const from = process.env.RESEND_FROM_EMAIL;
+    const apiKey = process.env.RESEND_API_KEY;
+
+    if (!apiKey || !from) {
+      if (this.isDevDeliveryMode()) {
+        this.logDevCode(email, code);
+        return { delivered: false, devFallback: true };
+      }
+      console.error('OTP email skipped: RESEND_API_KEY or RESEND_FROM_EMAIL is not configured');
+      return { delivered: false, devFallback: false };
+    }
+
     try {
-      // Check if user exists
+      const emailResult = await getResendClient().emails.send({
+        from,
+        to: email,
+        subject: 'Your Login Code',
+        html: this.generateOTPEmailTemplate(code, userName),
+      });
+
+      if (emailResult.error) {
+        console.error('Failed to send OTP email:', emailResult.error);
+
+        if (this.isDevDeliveryMode()) {
+          this.logDevCode(email, code);
+          return { delivered: false, devFallback: true };
+        }
+
+        return { delivered: false, devFallback: false };
+      }
+
+      return { delivered: true, devFallback: false };
+    } catch (error) {
+      console.error('OTP email transport error:', error);
+
+      if (this.isDevDeliveryMode()) {
+        this.logDevCode(email, code);
+        return { delivered: false, devFallback: true };
+      }
+
+      return { delivered: false, devFallback: false };
+    }
+  }
+
+  async sendOTP(email: string): Promise<{ success: boolean; message: string }> {
+    const normalizedEmail = this.normalizeEmail(email);
+
+    try {
       const user = await prisma.user.findUnique({
-        where: { email: email.toLowerCase() }
+        where: { email: normalizedEmail },
       });
 
       if (!user) {
         return {
           success: false,
-          message: 'No account found with this email address'
+          message: 'No account found with this email address',
         };
       }
 
-      // Check user status
-      if (user.status === 'PENDING') {
+      // Only suspended accounts cannot receive login codes.
+      if (user.status === 'SUSPENDED') {
         return {
           success: false,
-          message: 'Your account is pending approval. Please wait for admin activation.'
-        };
-      }
-      if (user.status === 'INACTIVE' || user.status === 'SUSPENDED') {
-        return {
-          success: false,
-          message: 'Your account is not active. Please contact support.'
+          message: 'Your account is suspended. Please contact support.',
         };
       }
 
-      // Check for recent OTP attempts (rate limiting)
-      const recentOTP = await (prisma as any).OTP.findFirst({
+      const recentOTP = await prisma.oTP.findFirst({
         where: {
-          email: email.toLowerCase(),
+          email: normalizedEmail,
           createdAt: {
-            gte: new Date(Date.now() - 5000) // Reduced to 5 seconds for better DX
-          }
-        }
+            gte: new Date(Date.now() - 30_000),
+          },
+        },
       });
 
       if (recentOTP) {
         return {
           success: false,
-          message: 'Please wait a few seconds before requesting another OTP'
+          message: 'Please wait 30 seconds before requesting another code',
         };
       }
 
-      // Invalidate any existing unused OTPs for this email
-      await (prisma as any).OTP.updateMany({
+      await prisma.oTP.updateMany({
         where: {
-          email: email.toLowerCase(),
-          isUsed: false
+          email: normalizedEmail,
+          isUsed: false,
         },
         data: {
-          isUsed: true
-        }
+          isUsed: true,
+        },
       });
 
-      // Generate new OTP
       const code = this.generateOTP();
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-      // Store OTP in database
-      await (prisma as any).OTP.create({
+      await prisma.oTP.create({
         data: {
-          email: email.toLowerCase(),
+          email: normalizedEmail,
           code,
-          expiresAt
-        }
+          expiresAt,
+        },
       });
 
-      // Log OTP in development for easy access
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`\n🔑 [DEV] Verification code for ${email}: ${code}\n`);
+      const delivery = await this.deliverOtpEmail(normalizedEmail, code, user.name || 'User');
+
+      if (delivery.delivered) {
+        return {
+          success: true,
+          message: 'Verification code sent to your email',
+        };
       }
 
-      // Send OTP email
-      const { getResendClient } = await import('./email');
-      const emailResult = await getResendClient().emails.send({
-        from: process.env.RESEND_FROM_EMAIL!,
-        to: email,
-        subject: 'Your Login Code',
-        html: this.generateOTPEmailTemplate(code, user.name || 'User')
-      });
-
-      if (emailResult.error) {
-        console.error('Failed to send OTP email:', emailResult.error);
-        
-        // Always allow fallback if we're on localhost to bypass Resend testing restrictions
-        const isLocal = process.env.NEXT_PUBLIC_APP_URL?.includes('localhost');
-        if (isLocal || process.env.NODE_ENV === 'development') {
-          return {
-            success: true,
-            message: `OTP generated (Check server logs for code: ${code})`
-          };
-        }
-
+      if (delivery.devFallback) {
         return {
-          success: false,
-          message: 'Failed to send OTP email. Please try again.'
+          success: true,
+          message:
+            'Verification code generated. In development, check the server console for your code.',
         };
       }
 
       return {
-        success: true,
-        message: 'OTP sent successfully to your email'
+        success: false,
+        message: 'Could not send verification email. Check email configuration or try again shortly.',
       };
-
     } catch (error) {
+      const dbMessage = getDatabaseUnavailableMessage(error);
+      if (dbMessage) {
+        console.error('OTP send failed — database unavailable:', error);
+        return { success: false, message: dbMessage };
+      }
+
       console.error('Error sending OTP:', error);
       return {
         success: false,
-        message: 'An error occurred while sending OTP'
+        message: 'An error occurred while sending the verification code',
       };
     }
   }
 
-  // Verify OTP and return user if valid
-  async verifyOTP(email: string, code: string): Promise<{
+  async verifyOTP(
+    email: string,
+    code: string
+  ): Promise<{
     success: boolean;
-    user?: any;
+    user?: Awaited<ReturnType<typeof prisma.user.findUnique>>;
     message: string;
   }> {
+    const normalizedEmail = this.normalizeEmail(email);
+    const normalizedCode = code.trim();
+
     try {
-      // Find the OTP
-      const otp = await (prisma as any).OTP.findFirst({
+      const otp = await prisma.oTP.findFirst({
         where: {
-          email: email.toLowerCase(),
-          code,
+          email: normalizedEmail,
+          code: normalizedCode,
           isUsed: false,
           expiresAt: {
-            gt: new Date()
-          }
-        }
+            gt: new Date(),
+          },
+        },
       });
 
       if (!otp) {
-        // Increment attempts for any existing OTP
-        await (prisma as any).OTP.updateMany({
+        await prisma.oTP.updateMany({
           where: {
-            email: email.toLowerCase(),
-            code,
-            isUsed: false
+            email: normalizedEmail,
+            code: normalizedCode,
+            isUsed: false,
           },
           data: {
             attempts: {
-              increment: 1
-            }
-          }
+              increment: 1,
+            },
+          },
         });
 
         return {
           success: false,
-          message: 'Invalid or expired OTP'
+          message: 'Invalid or expired verification code',
         };
       }
 
-      // Check attempts limit
       if (otp.attempts >= 3) {
-        await (prisma as any).OTP.update({
+        await prisma.oTP.update({
           where: { id: otp.id },
-          data: { isUsed: true }
+          data: { isUsed: true },
         });
 
         return {
           success: false,
-          message: 'Too many invalid attempts. Please request a new OTP.'
+          message: 'Too many invalid attempts. Please request a new code.',
         };
       }
 
-      // Mark OTP as used
-      await (prisma as any).OTP.update({
+      await prisma.oTP.update({
         where: { id: otp.id },
-        data: { isUsed: true }
+        data: { isUsed: true },
       });
 
-      // Get user details
       const user = await prisma.user.findUnique({
-        where: { email: email.toLowerCase() },
+        where: { email: normalizedEmail },
         include: {
-          affiliate: true
-        }
+          affiliate: true,
+        },
       });
 
       if (!user) {
         return {
           success: false,
-          message: 'User not found'
+          message: 'User not found',
+        };
+      }
+
+      if (user.status === 'SUSPENDED') {
+        return {
+          success: false,
+          message: 'Your account is suspended. Please contact support.',
         };
       }
 
       return {
         success: true,
         user,
-        message: 'OTP verified successfully'
+        message: 'Verification code accepted',
       };
-
     } catch (error) {
+      const dbMessage = getDatabaseUnavailableMessage(error);
+      if (dbMessage) {
+        console.error('OTP verify failed — database unavailable:', error);
+        return { success: false, message: dbMessage };
+      }
+
       console.error('Error verifying OTP:', error);
       return {
         success: false,
-        message: 'An error occurred while verifying OTP'
+        message: 'An error occurred while verifying the code',
       };
     }
   }
 
-  // Clean up expired OTPs (should be run periodically)
   async cleanupExpiredOTPs(): Promise<void> {
     try {
-      await (prisma as any).OTP.deleteMany({
+      await prisma.oTP.deleteMany({
         where: {
           OR: [
             {
               expiresAt: {
-                lt: new Date()
-              }
+                lt: new Date(),
+              },
             },
             {
               isUsed: true,
               createdAt: {
-                lt: new Date(Date.now() - 24 * 60 * 60 * 1000) // 24 hours old
-              }
-            }
-          ]
-        }
+                lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+              },
+            },
+          ],
+        },
       });
     } catch (error) {
       console.error('Error cleaning up expired OTPs:', error);
     }
   }
 
-  // Generate OTP email template
   private generateOTPEmailTemplate(code: string, userName: string): string {
     return `
       <!DOCTYPE html>

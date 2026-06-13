@@ -26,6 +26,8 @@
   },
   "scripts": {
     "dev": "next dev",
+    "db:up": "docker compose up -d db",
+    "dev:full": "docker compose up -d db && npm run db:push && npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

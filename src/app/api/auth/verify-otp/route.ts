@@ -1,23 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { otpService } from '@/lib/otp';
 import { SignJWT } from 'jose';
-import { checkRateLimit } from '@/lib/rate-limit';
+import { checkAuthRateLimit, getClientIp } from '@/lib/auth-rate-limit';
+import { getDatabaseUnavailableMessage } from '@/lib/prisma-errors';
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET!
-);
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limit: 5 verify attempts per minute per IP
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || request.headers.get('x-real-ip')
-      || 'unknown';
-    const rateLimit = await checkRateLimit(ip, 'auth/verify-otp', 5, 60 * 1000);
+    const ip = getClientIp(request);
+    const rateLimit = checkAuthRateLimit(ip, 'auth/verify-otp', 10, 60 * 1000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: 'Too many verification attempts. Please try again later.' },
-        { status: 429, headers: { 'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString() } }
+        {
+          success: false,
+          error: 'Too many verification attempts. Please try again later.',
+          message: 'Too many verification attempts. Please try again later.',
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString(),
+          },
+        }
       );
     }
 
@@ -25,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     if (!email || !code) {
       return NextResponse.json(
-        { error: 'Email and code are required' },
+        { success: false, error: 'Email and code are required', message: 'Email and code are required' },
         { status: 400 }
       );
     }
@@ -33,27 +38,28 @@ export async function POST(request: NextRequest) {
     const result = await otpService.verifyOTP(email, code);
 
     if (!result.success) {
+      const status =
+        result.message.includes('Database is unavailable') ? 503 : 400;
+
       return NextResponse.json(
-        { error: result.message },
-        { status: 400 }
+        { success: false, error: result.message, message: result.message },
+        { status }
       );
     }
 
     const user = result.user!;
 
-    // Generate JWT token
     const token = await new SignJWT({
       userId: user.id,
       email: user.email,
       role: user.role,
-      name: user.name
+      name: user.name,
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setExpirationTime('24h')
       .sign(JWT_SECRET);
 
-    // Set cookie
     const response = NextResponse.json({
       success: true,
       message: result.message,
@@ -62,27 +68,32 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
-        hasAffiliate: !!user.affiliate
-      }
+        hasAffiliate: !!user.affiliate,
+      },
     });
 
-    const proto = request.headers.get('x-forwarded-proto')
-      || request.nextUrl.protocol.replace(':', '');
+    const proto =
+      request.headers.get('x-forwarded-proto') || request.nextUrl.protocol.replace(':', '');
     response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: proto === 'https',
       sameSite: 'lax',
-      maxAge: 86400, // 24 hours
-      path: '/'
+      maxAge: 86400,
+      path: '/',
     });
 
     return response;
-
   } catch (error) {
     console.error('OTP verify error:', error);
+    const dbMessage = getDatabaseUnavailableMessage(error);
+
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        success: false,
+        error: dbMessage || 'Internal server error',
+        message: dbMessage || 'Internal server error',
+      },
+      { status: dbMessage ? 503 : 500 }
     );
   }
 }

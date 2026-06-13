@@ -73,7 +73,7 @@ export default function LoginPage() {
         setStep('otp');
         toast.success(otpData.message || 'Verification code sent');
       } else {
-        toast.error(otpData.message || 'Email not recognized');
+        toast.error(otpData.message || otpData.error || 'Could not send verification code');
       }
     } catch (_e) {
       toast.error('Something went wrong. Please try again.');

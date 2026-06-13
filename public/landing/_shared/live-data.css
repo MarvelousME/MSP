@@ -1,0 +1,135 @@
+/* Live betting data widgets — shared across affiliate landing pages */
+.live-data-banner {
+  margin-top: 24px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(25, 212, 120, 0.35);
+  background: linear-gradient(90deg, rgba(25, 212, 120, 0.12), rgba(217, 170, 62, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+}
+.live-data-banner .pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #19d478;
+  box-shadow: 0 0 12px #19d478;
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+.live-data-banner .status-demo { color: #f7d978; }
+.live-data-banner .status-live { color: #19d478; }
+
+.live-operators {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 28px;
+}
+@media (max-width: 900px) {
+  .live-operators { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .live-operators { grid-template-columns: 1fr; }
+}
+.live-operator-card {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.045);
+}
+.live-operator-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.live-operator-card h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.live-operator-card .mode-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.live-operator-card .mode-badge.demo { color: #f7d978; border-color: rgba(247, 217, 120, 0.4); }
+.live-operator-card .mode-badge.live { color: #19d478; border-color: rgba(25, 212, 120, 0.4); }
+.live-operator-card dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+.live-operator-card dt {
+  font-size: 0.72rem;
+  color: #a9b2bd;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.live-operator-card dd {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.live-operator-card .trend-up { color: #19d478; font-size: 0.78rem; }
+
+.live-races-section {
+  margin-top: 48px;
+  padding-top: 48px;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+.live-race-card {
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.04);
+  margin-bottom: 16px;
+}
+.live-race-card h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
+.live-race-card .race-meta {
+  color: #a9b2bd;
+  font-size: 0.82rem;
+  margin-bottom: 14px;
+}
+.live-runners {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.live-runners th {
+  text-align: left;
+  color: #a9b2bd;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.live-runners td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.live-runners .odds-cell {
+  font-weight: 700;
+  color: #f7d978;
+  font-variant-numeric: tabular-nums;
+}
+.live-data-error {
+  color: #ff8a8a;
+  font-size: 0.85rem;
+  padding: 12px;
+}

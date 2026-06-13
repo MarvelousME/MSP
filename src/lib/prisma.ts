@@ -367,8 +367,12 @@ export class DatabaseService {
   // Settings operations
   getPlatformSettings = unstable_cache(
     async () => {
-      // Return the first program's settings as default
-      return await prisma.programSettings.findFirst();
+      try {
+        return await prisma.programSettings.findFirst();
+      } catch {
+        // DB may be down during local dev; layout falls back to defaults.
+        return null;
+      }
     },
     ['platform-settings'],
     { tags: ['platform-settings'], revalidate: 3600 }

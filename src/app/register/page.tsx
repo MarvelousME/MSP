@@ -78,12 +78,12 @@ export default function RegisterPage() {
       const otpRes = await apiClient.post('/api/auth/send-otp', { email });
       const otpData = await otpRes.json();
 
-      if (otpRes.ok) {
+      if (otpRes.ok && otpData.success) {
         setStep('otp');
-        toast.success('Account created! A verification code has been sent to your email.');
+        toast.success(otpData.message || 'Account created! A verification code has been sent.');
       } else {
         setStep('otp');
-        toast.error(otpData.error || 'Failed to send code. Try resending.');
+        toast.error(otpData.message || otpData.error || 'Failed to send code. Try resending.');
       }
     } catch (_e) {
       toast.error('Something went wrong. Please try again.');
@@ -126,10 +126,11 @@ export default function RegisterPage() {
 
     try {
       const res = await apiClient.post('/api/auth/send-otp', { email });
-      if (res.ok) {
-        toast.success('A new verification code has been sent');
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(data.message || 'A new verification code has been sent');
       } else {
-        toast.error('Failed to resend code. Please try again.');
+        toast.error(data.message || data.error || 'Failed to resend code. Please try again.');
       }
     } catch (_e) {
       toast.error('Failed to resend code.');

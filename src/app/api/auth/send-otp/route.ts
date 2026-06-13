@@ -1,35 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { otpService } from '@/lib/otp';
-import { checkRateLimit } from '@/lib/rate-limit';
+import { checkAuthRateLimit, getClientIp } from '@/lib/auth-rate-limit';
+import { getDatabaseUnavailableMessage } from '@/lib/prisma-errors';
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limit: 10 OTP sends per minute per IP (increased from 3 for better UX)
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || request.headers.get('x-real-ip')
-      || 'unknown';
-    const rateLimit = await checkRateLimit(ip, 'auth/send-otp', 10, 60 * 1000);
+    const ip = getClientIp(request);
+    const rateLimit = checkAuthRateLimit(ip, 'auth/send-otp', 10, 60 * 1000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: 'Too many OTP requests. Please try again later.' },
-        { status: 429, headers: { 'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString() } }
+        {
+          success: false,
+          error: 'Too many code requests. Please try again later.',
+          message: 'Too many code requests. Please try again later.',
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString(),
+          },
+        }
       );
     }
 
-    const { email } = await request.json();
+    const body = await request.json();
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
 
     if (!email) {
       return NextResponse.json(
-        { error: 'Email is required' },
+        { success: false, error: 'Email is required', message: 'Email is required' },
         { status: 400 }
       );
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Invalid email format' },
+        { success: false, error: 'Invalid email format', message: 'Invalid email format' },
         { status: 400 }
       );
     }
@@ -37,22 +44,29 @@ export async function POST(request: NextRequest) {
     const result = await otpService.sendOTP(email);
 
     if (!result.success) {
+      const status = result.message.includes('Database is unavailable') ? 503 : 400;
+
       return NextResponse.json(
-        { success: false, message: result.message },
-        { status: 400 }
+        { success: false, error: result.message, message: result.message },
+        { status }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: result.message
+      message: result.message,
     });
-
   } catch (error) {
     console.error('OTP send error:', error);
+    const dbMessage = getDatabaseUnavailableMessage(error);
+
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        success: false,
+        error: dbMessage || 'Internal server error',
+        message: dbMessage || 'Internal server error',
+      },
+      { status: dbMessage ? 503 : 500 }
     );
   }
 }

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { emailService } from '@/lib/email';
-import { checkRateLimit } from '@/lib/rate-limit';
+import { checkAuthRateLimit, getClientIp } from '@/lib/auth-rate-limit';
+import { getDatabaseUnavailableMessage } from '@/lib/prisma-errors';
 
 export async function POST(request: NextRequest) {
   try {
     // Rate limit: 3 registration attempts per minute per IP
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || request.headers.get('x-real-ip')
-      || 'unknown';
-    const rateLimit = await checkRateLimit(ip, 'auth/register', 3, 60 * 1000);
+    const ip = getClientIp(request);
+    const rateLimit = checkAuthRateLimit(ip, 'auth/register', 5, 60 * 1000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { success: false, message: 'Too many registration attempts. Please try again later.' },
@@ -88,9 +87,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Register API error:', error);
+    const dbMessage = getDatabaseUnavailableMessage(error);
     return NextResponse.json(
-      { success: false, message: 'Registration failed' },
-      { status: 500 }
+      { success: false, message: dbMessage || 'Registration failed' },
+      { status: dbMessage ? 503 : 500 }
     );
   }
 }
